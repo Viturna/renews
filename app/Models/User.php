@@ -2,14 +2,12 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
     /**
@@ -18,13 +16,14 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'username',          // On utilise username
+        'username',
         'email',
         'password',
-        'current_level_id',  // Gamification
-        'current_xp',        // Gamification
-        'currency_balance',  // Gamification
-        'bio',               // Bio optionnelle
+        'current_level_id',
+        'current_xp',
+        'currency_balance',
+        'current_streak',
+        'last_streak_at',
     ];
 
     /**
@@ -47,6 +46,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'last_streak_at' => 'datetime',
         ];
     }
 
@@ -58,5 +58,22 @@ class User extends Authenticatable
     public function level()
     {
         return $this->belongsTo(Level::class, 'current_level_id');
+    }
+
+    public function addXp(int $amount)
+    {
+        $this->increment('current_xp', $amount);
+
+        $nextLevel = Level::where('level_number', '>', $this->level->level_number)
+                          ->orderBy('level_number', 'asc')
+                          ->first();
+
+        while ($nextLevel && $this->current_xp >= $nextLevel->xp_threshold) {
+            $this->update(['current_level_id' => $nextLevel->id]);
+            
+            $nextLevel = Level::where('level_number', '>', $nextLevel->level_number)
+                              ->orderBy('level_number', 'asc')
+                              ->first();
+        }
     }
 }

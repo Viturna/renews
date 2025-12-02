@@ -7,6 +7,7 @@ use App\Models\Theme;
 use App\Models\DailyContent;
 use App\Models\User;
 use App\Models\QuizQuestion;
+use Illuminate\Database\UniqueConstraintViolationException; // Import de l'exception
 
 class AdminController extends Controller
 {
@@ -47,21 +48,29 @@ class AdminController extends Controller
             'theme_id' => 'required|exists:themes,id',
             'title' => 'required|string|max:255',
             'video_url' => 'required|url',
-            'publish_date' => 'required|date',
+            // On garde la validation, mais le try-catch est la sécurité ultime
+            'publish_date' => 'required|date', 
             'description' => 'nullable|string',
         ]);
 
         $publishDate = \Carbon\Carbon::parse($request->publish_date);
         $unlockDate = $publishDate->copy()->addDay()->setTime(8, 0, 0);
 
-        DailyContent::create([
-            'theme_id' => $request->theme_id,
-            'title' => $request->title,
-            'video_url' => $request->video_url,
-            'description' => $request->description,
-            'publish_date' => $request->publish_date,
-            'unlock_quiz_at' => $unlockDate,
-        ]);
+        try {
+            DailyContent::create([
+                'theme_id' => $request->theme_id,
+                'title' => $request->title,
+                'video_url' => $request->video_url,
+                'description' => $request->description,
+                'publish_date' => $request->publish_date,
+                'unlock_quiz_at' => $unlockDate,
+            ]);
+        } catch (UniqueConstraintViolationException $e) {
+            // En cas d'erreur de doublon SQL, on renvoie une erreur de validation propre
+            return back()
+                ->withErrors(['publish_date' => 'Un contenu est déjà planifié pour cette date.'])
+                ->withInput();
+        }
 
         return back()->with('success', 'Contenu planifié !');
     }

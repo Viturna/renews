@@ -6,15 +6,18 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\DailyContent;
+use App\Models\Level;
+use App\Models\User;
 use Carbon\Carbon;
 
 class HomeController extends Controller
 {
-    // ... (Méthodes index, markAsSeen, showContent inchangées) ...
     public function index()
     {
         if (Auth::check()) {
-            $userId = Auth::id();
+            $user = Auth::user();
+            $userId = $user->id;
+            
             $seenContentIds = DB::table('user_progress')->where('user_id', $userId)->pluck('daily_content_id');
 
             $articles = DailyContent::with('theme')
@@ -31,20 +34,68 @@ class HomeController extends Controller
                     }
                     return $article;
                 });
+            
+            $currentLevel = $user->level;
+            $currentLevelNum = $currentLevel ? $currentLevel->level_number : 1;
+            $currentXp = $user->current_xp;
 
-            return view('dashboard', ['articles' => $articles]);
+            $nextLevel = Level::where('level_number', '>', $currentLevelNum)
+                ->orderBy('level_number', 'asc')
+                ->first();
+
+            $currentLevelThreshold = $currentLevel ? $currentLevel->xp_threshold : 0;
+            $nextLevelThreshold = $nextLevel ? $nextLevel->xp_threshold : ($currentXp * 1.5); // Fallback si niveau max
+
+            $levelRange = $nextLevelThreshold - $currentLevelThreshold;
+            if ($levelRange <= 0) $levelRange = 1; // Éviter division par zéro
+            
+            $progressPercent = (($currentXp - $currentLevelThreshold) / $levelRange) * 100;
+            $progressPercent = min(100, max(0, $progressPercent)); // Borner entre 0 et 100
+
+            $totalUsers = User::count();
+            $usersWithMoreXp = User::where('current_xp', '>', $currentXp)->count();
+            $rankTop = $totalUsers > 0 ? round((($usersWithMoreXp + 1) / $totalUsers) * 100) : 1;
+
+            $stats = [
+                'level' => $currentLevelNum,
+                'current_xp' => $currentXp,
+                'next_level_xp' => $nextLevelThreshold,
+                'progress_percent' => $progressPercent,
+                'rank_top' => $rankTop,
+            ];
+
+            return view('dashboard', [
+                'articles' => $articles, 
+                'stats' => $stats
+            ]);
         }
+        
         return view('welcome');
     }
 
     public function markAsSeen($id)
     {
-        $userId = Auth::id();
+        $user = Auth::user();
+        
         DB::table('user_progress')->updateOrInsert(
-            ['user_id' => $userId, 'daily_content_id' => $id],
+            ['user_id' => $user->id, 'daily_content_id' => $id],
             ['updated_at' => now()]
         );
-        return response()->json(['status' => 'success']);
+
+        // Logique Flammes
+        $today = Carbon::today();
+        $lastStreakDate = $user->last_streak_at ? $user->last_streak_at->startOfDay() : null;
+
+        if (!$lastStreakDate) {
+            $user->update(['current_streak' => 1, 'last_streak_at' => now()]);
+        } elseif ($lastStreakDate->diffInDays($today) == 1) {
+            $user->increment('current_streak');
+            $user->update(['last_streak_at' => now()]);
+        } elseif ($lastStreakDate->diffInDays($today) > 1) {
+            $user->update(['current_streak' => 1, 'last_streak_at' => now()]);
+        }
+
+        return response()->json(['status' => 'success', 'current_streak' => $user->current_streak]);
     }
 
     public function showContent(DailyContent $dailyContent)
@@ -59,25 +110,14 @@ class HomeController extends Controller
         return view('content.show', compact('dailyContent', 'embedUrl'));
     }
 
-    // 👇 MÉTHODE MODIFIÉE POUR ÉVITER LES DOUBLONS 👇
     public function storeComment(Request $request, DailyContent $dailyContent)
     {
-        // CAS 1 : C'est une RÉPONSE (le champ s'appelle 'reply_body')
         if ($request->has('reply_body')) {
-            $request->validate([
-                'reply_body' => 'required|string|max:1000',
-                'parent_id'  => 'required|exists:comments,id', // Parent OBLIGATOIRE
-            ]);
-            
+            $request->validate(['reply_body' => 'required|string|max:1000', 'parent_id' => 'required|exists:comments,id']);
             $body = $request->reply_body;
             $parentId = $request->parent_id;
-        } 
-        // CAS 2 : C'est un COMMENTAIRE PRINCIPAL (le champ s'appelle 'body')
-        else {
-            $request->validate([
-                'body' => 'required|string|max:1000',
-            ]);
-            
+        } else {
+            $request->validate(['body' => 'required|string|max:1000']);
             $body = $request->body;
             $parentId = null;
         }

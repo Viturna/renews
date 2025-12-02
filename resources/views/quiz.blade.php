@@ -5,7 +5,6 @@
              style="background-image: url('/images/bg-stars.png'); background-size: cover; background-position: center;">
         </div>
 
-        <!-- LOADER -->
         <div x-show="showLoader" 
              x-transition:leave="transition ease-in duration-500"
              x-transition:leave-start="opacity-100 scale-100"
@@ -33,7 +32,6 @@
             </div>
         </div>
 
-        <!-- QUIZ -->
         <div x-show="!showLoader && !showResults" 
              x-transition:enter="transition ease-out duration-500 delay-300"
              x-transition:enter-start="opacity-0 translate-y-10"
@@ -96,7 +94,6 @@
             </div>
         </div>
 
-        <!-- Résultats -->
         <div x-show="showResults" 
              x-transition:enter="transition ease-out duration-700"
              x-transition:enter-start="opacity-0 translate-y-20"
@@ -123,30 +120,45 @@
                 <div class="text-center z-10 flex flex-col items-center leading-none">
                     <span class="text-[10rem] font-black italic text-white drop-shadow-xl" 
                           style="font-family: 'Instrument Sans', sans-serif; -webkit-text-stroke: 3px white; color: transparent; text-shadow: 4px 4px 0px #74FD08;"
-                          x-text="score">4</span>
+                          x-text="score">0</span>
                     <span class="text-3xl font-medium text-white mt-[-20px]">sur <span x-text="totalQuestions">5</span></span>
                 </div>
 
                 <div class="absolute bottom-4 right-0 w-24 h-24 bg-renews-electric flex items-center justify-center rotate-12 shadow-lg animate-bounce-slow" 
                      style="clip-path: polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%);">
                     <div class="text-center leading-tight">
-                        <span class="block text-2xl font-black text-white drop-shadow-md" x-text="'+' + (score * 2)">+8</span>
-                        <span class="block text-sm font-bold text-white">Flop</span>
+                        <span class="block text-2xl font-black text-white drop-shadow-md" x-text="'+' + (score * 10)">+0</span>
+                        <span class="block text-sm font-bold text-white">XP</span>
                     </div>
                 </div>
             </div>
 
-            <div class="text-center max-w-xs mx-auto">
+            <div class="text-center max-w-xs mx-auto mb-8">
                 <h2 class="text-5xl font-black text-white mb-4 tracking-tighter">
-                    Génial !
+                    <span x-show="score >= totalQuestions">Parfait !</span>
+                    <span x-show="score < totalQuestions && score > 0">Pas mal !</span>
+                    <span x-show="score == 0">Oups...</span>
                 </h2>
                 <p class="text-gray-400 text-lg leading-snug">
-                    Presque parfait ! C'est déjà très bien, mais sois plus attentif la prochaine fois pour remporter un maximum de points <span class="text-renews-electric">🔥</span>
+                    <span x-show="score > 0">Tu as gagné de l'expérience pour monter de niveau !</span>
+                    <span x-show="score == 0">Retente ta chance demain pour gagner des XP.</span>
                 </p>
             </div>
 
-            <div class="h-24"></div>
+            <div class="w-full max-w-md">
+                <button @click="$refs.quizForm.submit()"
+                        class="w-full py-4 bg-renews-vert text-black font-black text-2xl rounded-xl shadow-[0_0_20px_#74FD08] hover:scale-105 transition-transform uppercase">
+                    Réclamer mes XP <i class="fa-solid fa-arrow-right ml-2"></i>
+                </button>
+            </div>
         </div>
+
+        <form x-ref="quizForm" method="POST" action="{{ route('quiz.store') }}" class="hidden">
+            @csrf
+            <template x-for="(answerId, questionId) in userAnswers">
+                <input type="hidden" :name="'answers[' + questionId + ']'" :value="answerId">
+            </template>
+        </form>
 
     </div>
 
@@ -159,6 +171,10 @@
                 selectedAnswer: null,
                 score: 0,
                 
+                // Stockage des réponses : { id_question: id_reponse }
+                userAnswers: {}, 
+                
+                // Chargement des questions depuis Laravel
                 questions: @json($content->questions->load('answers')),
                 
                 get currentQuestion() {
@@ -172,7 +188,7 @@
                 initGame() {
                     setTimeout(() => {
                         this.showLoader = false;
-                    }, 0);
+                    }, 1500); // Petit délai pour voir l'anim d'intro
                 },
 
                 selectAnswer(id) {
@@ -182,12 +198,17 @@
                 validateAnswer() {
                     if (!this.selectedAnswer) return;
 
+                    // 1. Sauvegarde visuelle du score (Feedback immédiat)
                     const answer = this.currentQuestion.answers.find(a => a.id === this.selectedAnswer);
-                    
                     if (answer && answer.is_correct) {
                         this.score++;
                     }
 
+                    // 2. Sauvegarde technique pour l'envoi au serveur
+                    // On stocke la réponse associée à l'ID de la question
+                    this.userAnswers[this.currentQuestion.id] = this.selectedAnswer;
+
+                    // 3. Passage à la suite
                     setTimeout(() => {
                         if (this.currentStep < this.questions.length - 1) {
                             this.currentStep++;
@@ -200,7 +221,6 @@
 
                 finishGame() {
                     this.showResults = true;
-                    // Logique d'envoi de score ici
                 }
             }
         }

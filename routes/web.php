@@ -11,6 +11,8 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\SocialAuthController;
 // Models
 use App\Models\DailyContent;
+use App\Models\Level;
+use App\Models\User;
 
 /*
 |--------------------------------------------------------------------------
@@ -56,6 +58,7 @@ Route::middleware('auth')->group(function () {
 
     // 2. QUIZ (Via QuizController)
     Route::get('/quiz', [QuizController::class, 'show'])->name('quiz');
+    Route::post('/quiz', [QuizController::class, 'store'])->name('quiz.store');
 
     // 3. CONTENU (VIDÉO, COMMENTAIRES, VU)
     Route::get('/content/{dailyContent}', [HomeController::class, 'showContent'])->name('content.show');
@@ -66,8 +69,42 @@ Route::middleware('auth')->group(function () {
     // Vue Visuelle (Design Gamification)
     Route::get('/profile', function () {
         $user = Auth::user();
-        // Données simulées pour la maquette
-        $stats = ['level' => 38, 'current_xp' => 85, 'next_level_xp' => 100, 'rank_top' => 10, 'trophies' => 4];
+        
+        // --- Calcul des Stats ---
+        $currentLevel = $user->level;
+        $currentLevelNum = $currentLevel ? $currentLevel->level_number : 1;
+        $currentXp = $user->current_xp;
+
+        // Prochain niveau
+        $nextLevel = Level::where('level_number', '>', $currentLevelNum)
+            ->orderBy('level_number', 'asc')
+            ->first();
+
+        // Seuils
+        $currentLevelThreshold = $currentLevel ? $currentLevel->xp_threshold : 0;
+        $nextLevelThreshold = $nextLevel ? $nextLevel->xp_threshold : ($currentXp * 1.5);
+
+        // Pourcentage
+        $levelRange = $nextLevelThreshold - $currentLevelThreshold;
+        if ($levelRange <= 0) $levelRange = 1;
+        
+        $progressPercent = (($currentXp - $currentLevelThreshold) / $levelRange) * 100;
+        $progressPercent = min(100, max(0, $progressPercent));
+
+        // Classement (Top %)
+        $totalUsers = User::count();
+        $usersWithMoreXp = User::where('current_xp', '>', $currentXp)->count();
+        $rankTop = $totalUsers > 0 ? round((($usersWithMoreXp + 1) / $totalUsers) * 100) : 1;
+
+        $stats = [
+            'level' => $currentLevelNum,
+            'current_xp' => $currentXp,
+            'next_level_xp' => $nextLevelThreshold,
+            'progress_percent' => $progressPercent,
+            'rank_top' => $rankTop,
+            'trophies' => 4 
+        ];
+
         return view('profile.show', compact('user', 'stats'));
     })->name('profile.show');
 
@@ -79,6 +116,12 @@ Route::middleware('auth')->group(function () {
     // 5. ADMIN (Via AdminController)
     Route::prefix('admin')->group(function () {
         Route::get('/', [AdminController::class, 'index'])->name('admin.dashboard');
+        
+        // --- SECURI TÉ ---
+        // Rediriger vers le dashboard si on tente d'accéder aux routes POST en GET
+        Route::get('/themes', function() { return redirect()->route('admin.dashboard'); });
+        Route::get('/contents', function() { return redirect()->route('admin.dashboard'); });
+
         Route::post('/themes', [AdminController::class, 'storeTheme'])->name('admin.themes.store');
         Route::post('/contents', [AdminController::class, 'storeContent'])->name('admin.contents.store');
         

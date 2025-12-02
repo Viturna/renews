@@ -11,32 +11,26 @@
             <!-- HEADER PROFIL -->
             <div class="flex items-start justify-between mb-2">
                 
-                <!-- Avatar avec bordure spéciale -->
+                <!-- Avatar -->
                 <div class="relative">
                     <div class="w-24 h-24 rounded-full border-[3px] border-white overflow-hidden shadow-lg bg-gray-800 z-10 relative">
-                        <!-- Placeholder Avatar -->
                         <div class="w-full h-full flex items-center justify-center bg-gray-700 text-gray-400">
+                            <!-- Affichage conditionnel si l'user a une photo de profil ou non -->
                             <i class="fa-solid fa-user text-4xl"></i>
                         </div>
-                        <!-- Si tu as une image : <img src="..." class="w-full h-full object-cover"> -->
                     </div>
-                    
-                    <!-- Cercle décoratif vert derrière (optionnel pour l'effet de halo) -->
+                    <!-- Halo vert décoratif -->
                     <div class="absolute inset-0 rounded-full border-[3px] border-renews-vert transform scale-110 opacity-0"></div>
                 </div>
 
                 <!-- Nom et Barre Décorative -->
                 <div class="flex-1 pt-4 pl-4 relative">
-                    <!-- Nom -->
                     <h1 class="text-2xl font-bold leading-none tracking-tight">
-                        <span class="text-white">{{ $user->username }}</span>
+                        <span class="text-white">{{ Auth::user()->username }}</span>
                     </h1>
 
-                    <!-- Barre graphique verte/blanche -->
                     <div class="mt-2 w-full h-8 relative">
-                        <!-- Barre Blanche -->
                         <div class="absolute top-0 left-0 w-[110%] h-[2px] bg-white transform -rotate-1 origin-left"></div>
-                        <!-- Barre Verte épaisse -->
                         <div class="absolute top-3 left-[-20px] w-[120%] h-1.5 bg-renews-vert transform -rotate-1 shadow-lg"></div>
                     </div>
                 </div>
@@ -44,18 +38,22 @@
 
             <!-- SECTION NIVEAU -->
             <div class="relative mt-2 mb-10">
-                <!-- Texte LVL -->
                 <div class="absolute right-20 bottom-4 text-gray-400 font-bold text-sm tracking-widest">LVL.</div>
                 
-                <!-- Gros Chiffre Niveau -->
+                <!-- Niveau Dynamique -->
                 <div class="absolute right-0 bottom-[-10px] text-8xl font-black text-white leading-none drop-shadow-lg"
                      style="-webkit-text-stroke: 2px transparent;">
                     {{ $stats['level'] }}
                 </div>
 
-                <!-- Barre de progression -->
+                <!-- Barre de progression Dynamique -->
                 <div class="w-[70%] h-3 bg-gray-700 rounded-full mt-8 relative overflow-hidden">
-                    <div class="h-full bg-renews-vert shadow-[0_0_10px_#74FD08]" style="width: {{ ($stats['current_xp'] / $stats['next_level_xp']) * 100 }}%"></div>
+                    <div class="h-full bg-renews-vert shadow-[0_0_10px_#74FD08] transition-all duration-1000 ease-out" 
+                         style="width: {{ $stats['progress_percent'] }}%"></div>
+                </div>
+                <!-- Petit texte XP restant (optionnel) -->
+                <div class="w-[70%] text-right text-xs text-gray-400 mt-1">
+                    {{ $stats['current_xp'] }} / {{ $stats['next_level_xp'] }} XP
                 </div>
             </div>
 
@@ -65,10 +63,10 @@
             <!-- STATS (Flamme, Top, Trophée) -->
             <div class="flex justify-between items-end mb-10 px-2">
                 
-                <!-- XP / Flamme -->
-                <div class="flex items-center gap-1">
-                    <span class="text-5xl font-black text-white tracking-tighter">{{ $stats['current_xp'] }}</span>
-                    <i class="fa-solid fa-fire text-renews-vert text-4xl drop-shadow-[0_0_5px_rgba(116,253,8,0.6)]"></i>
+                <!-- Flammes (Streaks) -->
+                <div class="flex items-center gap-1" title="Série de jours consécutifs">
+                    <span class="text-5xl font-black text-white tracking-tighter">{{ Auth::user()->current_streak ?? 0 }}</span>
+                    <i class="fa-solid fa-fire text-renews-vert text-4xl drop-shadow-[0_0_5px_rgba(116,253,8,0.6)] {{ Auth::user()->current_streak > 0 ? 'animate-pulse' : '' }}"></i>
                 </div>
 
                 <!-- TOP % -->
@@ -77,26 +75,40 @@
                     <span class="text-5xl font-black text-white italic tracking-tighter">{{ $stats['rank_top'] }}%</span>
                 </div>
 
-                <!-- Trophée -->
+                <!-- Trophée (Décoratif pour l'instant) -->
                 <div class="pb-1">
                     <i class="fa-solid fa-trophy text-white text-4xl"></i>
                 </div>
             </div>
 
-            <!-- GROS BLOC CONTENU (Texture Papier) -->
-            <!-- J'utilise une div avec un fond blanc/gris texturé pour imiter la zone de ta maquette -->
+            <!-- GROS BLOC CONTENU -->
             <div class="w-full aspect-square bg-[#e5e5e5] rounded-3xl shadow-inner relative overflow-hidden flex items-center justify-center">
-                <!-- Texture papier (simulation CSS) -->
                 <div class="absolute inset-0 opacity-40 mix-blend-multiply pointer-events-none"
                      style="background-image: url('https://www.transparenttextures.com/patterns/crumpled-paper.png');">
                 </div>
                 
-                <!-- Contenu temporaire du bloc -->
                 <div class="text-center opacity-30">
                     <i class="fa-solid fa-layer-group text-6xl text-black mb-2"></i>
                     <p class="text-black font-bold uppercase">Collection</p>
                 </div>
             </div>
+
+            <!-- Liste des articles (Si tu veux les afficher en dessous) -->
+            @if(isset($articles) && count($articles) > 0)
+                <div class="mt-10">
+                    <h2 class="text-xl font-bold mb-4">À découvrir</h2>
+                    @foreach($articles as $article)
+                        <div class="mb-4 bg-gray-800 rounded-lg p-4 flex gap-4">
+                            <div class="w-20 h-20 bg-cover bg-center rounded-md flex-shrink-0" style="background-image: url('{{ $article->thumbnail }}');"></div>
+                            <div class="flex-1">
+                                <span class="text-xs text-renews-vert uppercase font-bold">{{ $article->theme->name ?? 'Actu' }}</span>
+                                <h3 class="font-bold leading-tight">{{ $article->title }}</h3>
+                                <a href="{{ route('content.show', $article->id) }}" class="text-sm text-gray-400 mt-1 block">Regarder →</a>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
 
         </div>
     </div>
