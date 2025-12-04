@@ -15,7 +15,6 @@ export default {
                 sans: ['Poppins', ...defaultTheme.fontFamily.sans],
                 accent: ['Spectral', 'serif'],
             },
-
             colors: {
                 renews: {
                     vert: '#70CD25',
@@ -25,8 +24,6 @@ export default {
                     noir: '#000000',
                     'noir-impure': '#1C1C1C',
                     'gris-fonce': '#232222',
-
-                    blanc: '#FFFFFF',
                 }
             }
         },

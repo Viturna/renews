@@ -6,27 +6,82 @@ use Illuminate\Http\Request;
 use App\Models\Theme;
 use App\Models\DailyContent;
 use App\Models\User;
-use App\Models\QuizQuestion;
-use Illuminate\Database\UniqueConstraintViolationException; // Import de l'exception
+use App\Models\Level;
+use Illuminate\Database\UniqueConstraintViolationException;
 
 class AdminController extends Controller
 {
     public function index()
     {
-        // Stats
         $stats = [
             'total_users' => User::count(),
             'total_contents' => DailyContent::count(),
             'total_themes' => Theme::count(),
-            'today_content' => DailyContent::whereDate('publish_date', today())->exists() ? 'Oui' : 'Non',
+            'today_content' => DailyContent::whereDate('publish_date', today())->exists(),
         ];
 
-        // Listes
-        $themes = Theme::withCount('dailyContents')->get();
-        $contents = DailyContent::with('theme')->orderBy('publish_date', 'desc')->paginate(10);
         $lastUsers = User::orderBy('created_at', 'desc')->take(5)->get();
 
-        return view('admin.dashboard', compact('themes', 'contents', 'stats', 'lastUsers'));
+        return view('admin.dashboard', compact('stats', 'lastUsers'));
+    }
+
+    // --- GESTION UTILISATEURS ---
+    public function users(Request $request)
+    {
+        $query = User::query();
+
+        if ($request->has('search')) {
+            $search = $request->get('search');
+            $query->where('username', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
+        }
+
+        $users = $query->with('level')->orderBy('created_at', 'desc')->paginate(20);
+        $levels = Level::all(); 
+
+        return view('admin.users', compact('users', 'levels'));
+    }
+
+    public function updateUser(Request $request, User $user)
+    {
+        $validated = $request->validate([
+            'username' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'current_xp' => 'required|integer|min:0',
+            'current_level_id' => 'required|exists:levels,id',
+        ]);
+
+        $user->update($validated);
+
+        return back()->with('success', 'Utilisateur mis à jour !');
+    }
+
+    public function destroyUser(User $user)
+    {
+        if ($user->id === auth()->id()) {
+            return back()->withErrors(['error' => 'Action impossible sur soi-même.']);
+        }
+
+        $user->delete();
+        return back()->with('success', 'Utilisateur supprimé.');
+    }
+    // ----------------------------
+
+    public function themes()
+    {
+        $themes = Theme::withCount('dailyContents')->get();
+        return view('admin.themes', compact('themes'));
+    }
+
+    public function contents()
+    {
+        $contents = DailyContent::with('theme')
+            ->orderBy('publish_date', 'desc')
+            ->paginate(15);
+            
+        $themes = Theme::all();
+
+        return view('admin.contents', compact('contents', 'themes'));
     }
 
     public function storeTheme(Request $request)
@@ -39,7 +94,7 @@ class AdminController extends Controller
 
         Theme::create($request->all());
 
-        return back()->with('success', 'Thème ajouté avec succès !');
+        return back()->with('success', 'Thème ajouté !');
     }
 
     public function storeContent(Request $request)
@@ -48,8 +103,7 @@ class AdminController extends Controller
             'theme_id' => 'required|exists:themes,id',
             'title' => 'required|string|max:255',
             'video_url' => 'required|url',
-            // On garde la validation, mais le try-catch est la sécurité ultime
-            'publish_date' => 'required|date', 
+            'publish_date' => 'required|date',
             'description' => 'nullable|string',
         ]);
 
@@ -66,48 +120,39 @@ class AdminController extends Controller
                 'unlock_quiz_at' => $unlockDate,
             ]);
         } catch (UniqueConstraintViolationException $e) {
-            // En cas d'erreur de doublon SQL, on renvoie une erreur de validation propre
             return back()
-                ->withErrors(['publish_date' => 'Un contenu est déjà planifié pour cette date.'])
+                ->withErrors(['publish_date' => 'Date déjà prise.'])
                 ->withInput();
         }
 
         return back()->with('success', 'Contenu planifié !');
     }
 
-    // --- GESTION DES QUIZ ---
-
     public function manageQuiz(DailyContent $dailyContent)
     {
-        // On charge les questions existantes avec leurs réponses pour les afficher dans le formulaire
         $dailyContent->load('questions.answers');
         return view('admin.quiz_manager', compact('dailyContent'));
     }
 
     public function updateQuiz(Request $request, DailyContent $dailyContent)
     {
-        // Validation des données imbriquées (Questions -> Réponses)
         $data = $request->validate([
             'questions' => 'required|array|min:1',
             'questions.*.text' => 'required|string',
             'questions.*.points' => 'required|integer|min:1',
             'questions.*.answers' => 'required|array|min:2',
             'questions.*.answers.*.text' => 'required|string',
-            'questions.*.correct_index' => 'required|integer', // L'index de la réponse correcte
+            'questions.*.correct_index' => 'required|integer',
         ]);
 
-        // Pour simplifier la mise à jour, on supprime les anciennes questions et on recrée tout
-        // (Méthode "Bourrin" mais efficace pour un admin simple)
         $dailyContent->questions()->delete();
 
         foreach ($data['questions'] as $qData) {
-            // 1. Créer la question
             $question = $dailyContent->questions()->create([
                 'question_text' => $qData['text'],
                 'points_value' => $qData['points'],
             ]);
 
-            // 2. Créer les réponses
             foreach ($qData['answers'] as $index => $aData) {
                 $question->answers()->create([
                     'answer_text' => $aData['text'],
@@ -116,6 +161,6 @@ class AdminController extends Controller
             }
         }
 
-        return redirect()->route('admin.dashboard')->with('success', 'Quiz mis à jour avec succès !');
+        return redirect()->route('admin.contents.index')->with('success', 'Quiz mis à jour !');
     }
 }

@@ -28,7 +28,7 @@
         <div class="flex-1 flex flex-col items-center justify-between p-5 z-10 w-full max-w-md mx-auto">
             
             <div class="flex-1 flex flex-col items-center justify-center w-full space-y-10 gap-8">
-                 <img src="/images/logo.svg" class="w-full px-6">
+                 <img src="/images/logo.svg" class="w-full px-6 rotate-15">
 
                 <div class="text-center space-y-2">
                     <h1 class="text-xl md:text-2xl font-medium leading-snug">

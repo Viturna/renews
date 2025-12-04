@@ -77,12 +77,10 @@
                                 </div>
                             </div>
 
-                            <!-- Réponses (Niveau 2) -->
                             @if($comment->replies->count() > 0)
                                 <div class="ml-11 mt-3 space-y-3 pl-3 border-l-2 border-gray-700">
                                     @foreach($comment->replies as $reply)
                                         
-                                        <!-- Bloc Réponse -->
                                         <div x-data="{ showSubReply: false, subReplyContent: '' }">
                                             <div class="flex gap-3">
                                                 <div class="w-6 h-6 rounded-full bg-gray-700 flex items-center justify-center font-bold text-[10px] shrink-0 text-gray-300">
@@ -97,7 +95,6 @@
                                                         <p class="text-xs text-gray-400">{{ $reply->body }}</p>
                                                     </div>
                                                     
-                                                    <!-- Bouton Répondre à une réponse -->
                                                     <button @click="showSubReply = !showSubReply; subReplyContent = '@' + '{{ $reply->user->username }} ';" 
                                                             class="text-[10px] text-gray-600 mt-1 ml-2 hover:text-gray-300 transition">
                                                         Répondre
@@ -105,12 +102,9 @@
                                                 </div>
                                             </div>
 
-                                            <!-- Formulaire de réponse à une réponse (Niveau 3 aplati) -->
-                                            <!-- Utilise 'reply_body' et parent_id du commentaire RACINE -->
                                             <div x-show="showSubReply" style="display: none;" class="mt-2 ml-9" x-transition>
                                                 <form action="{{ route('content.comment', $dailyContent->id) }}" method="POST" class="flex gap-2">
                                                     @csrf
-                                                    <!-- IMPORTANT : On lie toujours au parent racine pour éviter l'imbrication infinie -->
                                                     <input type="hidden" name="parent_id" value="{{ $comment->id }}">
                                                     
                                                     <input type="text" name="reply_body" x-model="subReplyContent" placeholder="Répondre..." required
@@ -127,8 +121,6 @@
                                 </div>
                             @endif
 
-                            <!-- Formulaire de réponse au commentaire racine -->
-                            <!-- Utilise 'reply_body' -->
                             <div x-show="showReply" style="display: none;" class="ml-11 mt-3" x-transition>
                                 <form action="{{ route('content.comment', $dailyContent->id) }}" method="POST" class="flex gap-2">
                                     @csrf
