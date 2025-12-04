@@ -4,12 +4,10 @@
     <!-- CONTAINER PRINCIPAL -->
     <div class="relative w-full h-[calc(100vh-85px)] bg-renews-noir-impure overflow-hidden flex flex-col items-center pb-6 font-sans">
 
-        <!-- Fond étoilé -->
         <div class="absolute inset-0 z-0 pointer-events-none" 
              style="background-image: url('/images/bg-stars.png'); background-size: cover; background-position: center;">
         </div>
 
-        <!-- HEADER : ACTUS DU JOUR -->
         <div class="z-10 mt-6 mb-4 text-center">
             <h1 class="text-4xl font-bold text-white tracking-tight">
                 Actus du 
@@ -24,7 +22,6 @@
         <!-- STACK DE CARTES -->
         <div id="card-stack" class="relative w-full max-w-[340px] aspect-[340/400] z-10 mx-auto flex-1 mb-4">
             
-            <!-- Message de fin -->
             <div class="absolute inset-0 flex items-center justify-center text-center p-6 text-white z-0">
                 <div>
                     <h3 class="text-2xl font-bold mb-2">C'est tout pour aujourd'hui !</h3>
@@ -37,32 +34,26 @@
 
             @foreach($articles as $index => $article)
                 <!-- CARTE -->
-                <div class="card absolute inset-0 rounded-[35px] shadow-2xl overflow-hidden cursor-grab active:cursor-grabbing transform transition-transform duration-300 origin-bottom select-none border-[6px] border-[#2a2a2a]"
+                <div class="card absolute inset-0 rounded-[35px] shadow-2xl overflow-hidden cursor-grab active:cursor-grabbing transform transition-transform duration-300 origin-bottom select-none "
                      style="z-index: {{ 100 - $index }}; display: {{ $index === 0 ? 'block' : 'block' }}; --rotate: {{ $index === 0 ? '0deg' : ($index % 2 == 0 ? '2deg' : '-2deg') }}"
                      data-id="{{ $article->id }}">
                     
-                    <!-- Image Pleine Hauteur -->
                     <div class="absolute inset-0 bg-gray-800">
                          <img src="{{ $article->thumbnail }}" class="w-full h-full object-cover pointer-events-none">
-                         <!-- Gradient sombre en bas -->
                          <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent"></div>
                     </div>
 
-                    <!-- Contenu Texte -->
                     <div class="absolute bottom-0 left-0 w-full p-6 pb-8 text-left pointer-events-none">
-                        <!-- Thème -->
                         <span class="inline-block text-renews-vert font-accent italic text-3xl mb-1 drop-shadow-md">
                             {{ $article->theme->name ?? 'Actu' }}
                         </span>
                         
-                        <!-- Titre -->
                         <h2 class="text-white text-3xl font-bold leading-tight tracking-tight drop-shadow-lg">
                             {{ $article->title }}
                         </h2>
                     </div>
                 </div>
                 
-                <!-- Ombre verte derrière la première carte -->
                 @if($index === 0)
                 <div id="card-shadow" class="absolute inset-0 bg-gray-800/50 rounded-[35px] -z-10 transform scale-95 translate-y-3 blur-sm"></div>
                 @endif
@@ -72,9 +63,8 @@
         <!-- BOUTONS D'ACTION -->
         <div class="w-full max-w-xs px-4 pb-2 z-20 flex items-center justify-between mb-2">
             
-            <!-- CROIX (Passer) -->
             <button id="btn-reject" class="group flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.3)] hover:scale-110 active:scale-95 transition-all duration-200">
-                <svg class="w-10 h-10 text-renews-vert" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                <svg class="w-10 h-10 text-[#F14D3F]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>

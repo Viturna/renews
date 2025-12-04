@@ -41,7 +41,8 @@
                 <nav class="w-full bg-[#1C1C1C] overflow-hidden shadow-[0_-5px_20px_rgba(0,0,0,0.5)] h-[75px] flex items-center px-4 relative z-40">
                     
                     <div class="flex-1 flex justify-around pr-8">
-                        <a href="#" class="flex flex-col items-center gap-1 text-white hover:text-renews-vert transition-colors group">
+                         <a href="{{ route('leaderboard') }}" class="flex flex-col items-center gap-1 transition-colors group
+                           {{ request()->routeIs('leaderboard') ? 'text-renews-vert' : 'text-white hover:text-renews-vert' }}">
                             <i class="fa-solid fa-trophy text-xl transition-colors"></i>
                             <span class="text-[10px] font-medium">Leaderboard</span>
                         </a>

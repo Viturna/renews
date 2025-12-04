@@ -20,7 +20,7 @@ export default {
                     vert: '#70CD25',
                     electric: '#74FD08',
                     fonce: '#4B9635',
-
+                    gris: '#808080',
                     noir: '#000000',
                     'noir-impure': '#1C1C1C',
                     'gris-fonce': '#232222',

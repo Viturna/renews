@@ -28,10 +28,12 @@
         <div class="flex-1 flex flex-col items-center justify-between p-5 z-10 w-full max-w-md mx-auto">
             
             <div class="flex-1 flex flex-col items-center justify-center w-full space-y-10 gap-8">
-                 <img src="/images/logo.svg" class="w-full px-6 rotate-15">
+                <div class="-rotate-3 pb-20">
+                    <img src="/images/logo.svg" class="w-full px-4">
+                </div>
 
                 <div class="text-center space-y-2">
-                    <h1 class="text-xl md:text-2xl font-medium leading-snug">
+                    <h1 class="text-xl md:text-2xl font-medium">
                         Bienvenue sur Renews,<br>
                         la nouvelle manière de 
                         <span class="font-accent italic text-2xl md:text-3xl">s’informer</span>&nbsp;!
@@ -41,13 +43,13 @@
 
             <div class="w-full space-y-4 mb-8">
                 <a href="{{ route('login') }}" 
-                   class="block w-full py-4 bg-renews-vert hover:bg-renews-electric text-white font-bold text-center text-lg rounded-xl transition-all duration-300 shadow-lg transform hover:scale-[1.02]">
+                   class="block w-full py-4 bg-renews-vert hover:bg-renews-fonce text-white font-bold text-center text-lg rounded-xl transition-all duration-300 shadow-lg transform hover:scale-[1.02]">
                     Je me connecte
                 </a>
 
-                <div class="text-center text-sm">
-                    <span class="text-gray-300">Pas encore inscrit ?</span>
-                    <a href="{{ route('register') }}" class="font-bold underline text-white hover:text-renews-electric ml-1">
+                <div class="text-center">
+                    <span class="text-white">Pas encore inscrit ?</span>
+                    <a href="{{ route('register') }}" class="font-bold underline text-white hover:text-renews-fonce ml-1">
                         Je crée un nouveau compte
                     </a>
                 </div>
