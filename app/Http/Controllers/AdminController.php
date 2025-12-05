@@ -72,6 +72,11 @@ class AdminController extends Controller
         $themes = Theme::withCount('dailyContents')->get();
         return view('admin.themes', compact('themes'));
     }
+      public function destroyTheme(Theme $theme)
+    {
+        $theme->delete();
+        return back()->with('success', 'Theme supprimé.');
+    }
 
     public function contents()
     {
@@ -139,7 +144,6 @@ class AdminController extends Controller
         ]);
 
         $publishDate = \Carbon\Carbon::parse($request->publish_date);
-        // Recalcul de la date de déblocage du quiz
         $unlockDate = $publishDate->copy()->addDay()->setTime(8, 0, 0);
 
         $dailyContent->update([

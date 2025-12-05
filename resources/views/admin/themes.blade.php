@@ -10,12 +10,13 @@
         
         <!-- LISTE -->
         <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-            <table class="w-full text-left">
+            <table class="w-full text-left overflow-x-scroll">
                 <thead class="bg-gray-50 text-gray-500 uppercase text-xs border-b border-gray-100">
                     <tr>
                         <th class="px-6 py-4 font-semibold">Nom</th>
                         <th class="px-6 py-4 font-semibold">Slug</th>
                         <th class="px-6 py-4 text-center font-semibold">Articles</th>
+                        <th class="px-6 py-4 font-semibold">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
@@ -30,6 +31,15 @@
                         <td class="px-6 py-4 text-gray-500 font-mono text-xs">{{ $theme->slug }}</td>
                         <td class="px-6 py-4 text-center">
                             <span class="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-bold">{{ $theme->daily_contents_count }}</span>
+                        </td>
+                         <td class="px-6 py-4 text-center">
+                            <form action="{{ route('admin.themes.destroy', $theme->id) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce thème ?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-gray-200" title="Supprimer">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </form>
                         </td>
                     </tr>
                     @endforeach

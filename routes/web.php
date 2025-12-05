@@ -70,10 +70,10 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/themes', [AdminController::class, 'themes'])->name('admin.themes.index');
         Route::post('/themes', [AdminController::class, 'storeTheme'])->name('admin.themes.store');
+        Route::delete('/themes/{dailyContent}', [AdminController::class, 'destroyTheme'])->name('admin.themes.destroy');
         
         Route::get('/contents', [AdminController::class, 'contents'])->name('admin.contents.index');
         Route::post('/contents', [AdminController::class, 'storeContent'])->name('admin.contents.store');
-
         Route::patch('/contents/{dailyContent}', [AdminController::class, 'updateContent'])->name('admin.contents.update');
         Route::delete('/contents/{dailyContent}', [AdminController::class, 'destroyContent'])->name('admin.contents.destroy');
         
