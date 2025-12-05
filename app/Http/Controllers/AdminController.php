@@ -7,6 +7,7 @@ use App\Models\Theme;
 use App\Models\DailyContent;
 use App\Models\User;
 use App\Models\Level;
+use App\Models\Ad;
 use Illuminate\Database\UniqueConstraintViolationException;
 
 class AdminController extends Controller
@@ -162,5 +163,50 @@ class AdminController extends Controller
         }
 
         return redirect()->route('admin.contents.index')->with('success', 'Quiz mis à jour !');
+    }
+    
+    // ads
+    public function ads()
+    {
+        $ads = Ad::orderBy('display_interval', 'asc')->get();
+        return view('admin.ads', compact('ads'));
+    }
+
+    public function storeAd(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'nullable|string', 
+            'image_url' => 'nullable|url|max:2048',
+            'link_url' => 'required|url|max:2048',
+            'display_interval' => 'required|integer|min:1',
+            'is_active' => 'boolean',
+        ]);
+
+        Ad::create($validated);
+
+        return back()->with('success', 'Publicité ajoutée !');
+    }
+
+    public function updateAd(Request $request, Ad $ad)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'nullable|string',
+            'image_url' => 'nullable|url|max:2048',
+            'link_url' => 'required|url|max:2048',
+            'display_interval' => 'required|integer|min:1',
+            'is_active' => 'boolean',
+        ]);
+
+        $ad->update($validated);
+
+        return back()->with('success', 'Publicité mise à jour !');
+    }
+
+    public function destroyAd(Ad $ad)
+    {
+        $ad->delete();
+        return back()->with('success', 'Publicité supprimée.');
     }
 }

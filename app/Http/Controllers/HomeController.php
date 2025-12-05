@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\DailyContent;
+use App\Models\Ad; 
 use App\Models\Level;
 use App\Models\User;
 use Carbon\Carbon;
@@ -22,7 +23,7 @@ class HomeController extends Controller
 
             $articles = DailyContent::with('theme')
                 ->whereDate('publish_date', '<=', Carbon::today())
-                ->whereNotIn('id', $seenContentIds)
+                // ->whereNotIn('id', $seenContentIds)
                 ->orderBy('publish_date', 'desc')
                 ->take(10)
                 ->get()
@@ -30,7 +31,7 @@ class HomeController extends Controller
                     if (preg_match('/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/', $article->video_url, $matches)) {
                         $article->thumbnail = "https://img.youtube.com/vi/" . $matches[1] . "/maxresdefault.jpg";
                     } else {
-                        $article->thumbnail = "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158";
+                        $article->thumbnail = "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158"; // Vignette par défaut
                     }
                     return $article;
                 });
@@ -44,13 +45,13 @@ class HomeController extends Controller
                 ->first();
 
             $currentLevelThreshold = $currentLevel ? $currentLevel->xp_threshold : 0;
-            $nextLevelThreshold = $nextLevel ? $nextLevel->xp_threshold : ($currentXp * 1.5); // Fallback si niveau max
+            $nextLevelThreshold = $nextLevel ? $nextLevel->xp_threshold : ($currentXp * 1.5); 
 
             $levelRange = $nextLevelThreshold - $currentLevelThreshold;
             if ($levelRange <= 0) $levelRange = 1; // Éviter division par zéro
             
             $progressPercent = (($currentXp - $currentLevelThreshold) / $levelRange) * 100;
-            $progressPercent = min(100, max(0, $progressPercent)); // Borner entre 0 et 100
+            $progressPercent = min(100, max(0, $progressPercent)); 
 
             $totalUsers = User::count();
             $usersWithMoreXp = User::where('current_xp', '>', $currentXp)->count();
@@ -63,15 +64,22 @@ class HomeController extends Controller
                 'progress_percent' => $progressPercent,
                 'rank_top' => $rankTop,
             ];
+            
+            $ads = Ad::where('is_active', true)
+                     ->orderBy('display_interval', 'asc')
+                     ->get();
 
             return view('dashboard', [
                 'articles' => $articles, 
-                'stats' => $stats
+                'stats' => $stats,
+                'ads' => $ads,
             ]);
         }
         
         return view('welcome');
     }
+
+    // ... (markAsSeen, showContent, storeComment restent inchangés)
 
     public function markAsSeen($id)
     {

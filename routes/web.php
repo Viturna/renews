@@ -13,6 +13,7 @@ use App\Models\DailyContent;
 use App\Models\Level;
 use App\Models\User;
 
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -21,14 +22,12 @@ use App\Models\User;
 
 Route::get('/', [HomeController::class, 'index'])->name('dashboard');
 
-// --- ROUTES INVITÉS ---
 Route::middleware('guest')->group(function () {
     Route::get('register', [\App\Http\Controllers\Auth\RegisteredUserController::class, 'create'])->name('register');
     Route::post('register', [\App\Http\Controllers\Auth\RegisteredUserController::class, 'store']);
     Route::get('login', [\App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'create'])->name('login');
     Route::post('login', [\App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'store']);
     
-    // Auth Sociale
     Route::get('/auth/{provider}/redirect', [SocialAuthController::class, 'redirect'])->name('social.redirect');
     Route::get('/auth/{provider}/callback', [SocialAuthController::class, 'callback'])->name('social.callback');
     
@@ -38,12 +37,10 @@ Route::middleware('guest')->group(function () {
     Route::post('reset-password', [\App\Http\Controllers\Auth\NewPasswordController::class, 'store'])->name('password.store');
 });
 
-// --- ROUTES CONNECTÉS ---
 Route::middleware('auth')->group(function () {
     
     Route::post('logout', [\App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'destroy'])->name('logout');
     
-    // Amis
     Route::get('/friends', [FriendController::class, 'index'])->name('friends');
     Route::get('/friends/add', [FriendController::class, 'search'])->name('friends.add');
     Route::post('/friends/add/{id}', [FriendController::class, 'store'])->name('friends.store');
@@ -52,20 +49,18 @@ Route::middleware('auth')->group(function () {
     
     Route::get('/leaderboard', [LeaderboardController::class, 'index'])->name('leaderboard'); 
 
-    // Quiz & Contenu
     Route::get('/quiz', [QuizController::class, 'show'])->name('quiz');
     Route::post('/quiz', [QuizController::class, 'store'])->name('quiz.store');
     Route::get('/content/{dailyContent}', [HomeController::class, 'showContent'])->name('content.show');
     Route::post('/content/{dailyContent}/comment', [HomeController::class, 'storeComment'])->name('content.comment');
     Route::post('/content/{dailyContent}/seen', [HomeController::class, 'markAsSeen'])->name('content.seen');
 
-    // Profil
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // --- ADMIN ---
+    
     Route::prefix('admin')->group(function () {
         Route::get('/', [AdminController::class, 'index'])->name('admin.dashboard');
         
@@ -81,5 +76,10 @@ Route::middleware('auth')->group(function () {
         
         Route::get('/content/{dailyContent}/quiz', [AdminController::class, 'manageQuiz'])->name('admin.quiz.manage');
         Route::post('/content/{dailyContent}/quiz', [AdminController::class, 'updateQuiz'])->name('admin.quiz.update');
+
+        Route::get('/ads', [AdminController::class, 'ads'])->name('admin.ads.index');
+        Route::post('/ads', [AdminController::class, 'storeAd'])->name('admin.ads.store');
+        Route::patch('/ads/{ad}', [AdminController::class, 'updateAd'])->name('admin.ads.update');
+        Route::delete('/ads/{ad}', [AdminController::class, 'destroyAd'])->name('admin.ads.destroy');
     });
 });

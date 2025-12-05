@@ -20,9 +20,9 @@
             @endif
 
             <div class="mb-12 text-center">
-                <h1 class="text-4xl font-medium leading-tight tracking-tight">
+                <h1 class="text-3xl font-medium leading-tight tracking-tight">
                     Trouve tes 
-                    <span class="text-renews-vert font-accent italic relative inline-block pl-1">
+                    <span class="text-renews-vert text-4xl font-accent italic relative inline-block pl-1">
                         amis
                         <span class="absolute -top-1 -right-4 text-2xl">✦</span>
                         <span class="absolute bottom-1 left-0 w-full h-[3px] bg-white rounded-full"></span>
@@ -33,7 +33,7 @@
             <!-- Formulaire Recherche -->
             <div class="mb-8 w-full">
                 <h2 class="text-center text-2xl font-medium mb-4">
-                    par <span class="text-renews-vert font-accent italic">pseudo</span>
+                    par <span class="text-renews-vert font-accent italic text-3xl">pseudo</span>
                 </h2>
                 
                 <form action="{{ route('friends.add') }}" method="GET" class="relative">
@@ -43,7 +43,7 @@
                            placeholder="Le pseudo..." 
                            class="w-full bg-white text-black font-medium text-lg py-4 px-6 rounded-xl border-none placeholder-gray-400 focus:ring-4 focus:ring-renews-vert/50 transition-shadow shadow-lg">
                     
-                    <button type="submit" class="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-renews-vert transition-colors p-2">
+                    <button type="submit" class="absolute right-4 top-1/2 -translate-y-1/2 text-black hover:text-renews-vert transition-colors p-2">
                         <i class="fa-solid fa-magnifying-glass text-xl"></i>
                     </button>
                 </form>
@@ -81,9 +81,9 @@
             @if(!isset($search))
             <div class="w-full mt-auto mb-8">
                 <h2 class="text-center text-2xl font-medium mb-4">
-                    par <span class="text-renews-vert font-accent italic">qr code</span>
+                    par <span class="text-renews-vert font-accent italic text-3xl">qr code</span>
                 </h2>
-                <button onclick="alert('Bientôt disponible !')" class="w-full bg-renews-vert hover:bg-renews-electric text-white font-medium text-xl py-4 rounded-xl shadow-[0_4px_20px_rgba(112,205,37,0.4)] transition-all transform active:scale-95 flex items-center justify-center gap-3">
+                <button onclick="alert('Bientôt disponible !')" class="w-full bg-renews-vert hover:bg-renews-fonce text-white font-medium text-xl py-4 rounded-xl transition-all transform active:scale-95 flex items-center justify-center gap-3">
                     <i class="fa-solid fa-qrcode"></i>
                     Scanner un QR code
                 </button>
