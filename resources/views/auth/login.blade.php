@@ -58,7 +58,7 @@
                     <label for="email" class="block text-white font-bold mb-2 text-lg pl-1">Adresse mail</label>
                     <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus 
                            placeholder="Ton mail" 
-                           class="w-full rounded-xl border-none bg-white py-3.5 px-4 text-gris placeholder-gray-400 focus:ring-4 focus:ring-renews-vert/50 transition-shadow">
+                           class="w-full rounded-xl border-none bg-white py-3.5 px-4 text-gray-800 placeholder-gray-400 focus:ring-4 focus:ring-renews-vert/50 transition-shadow">
                     <x-input-error :messages="$errors->get('email')" class="mt-2 text-red-400 font-bold text-sm" />
                 </div>
 
@@ -66,7 +66,7 @@
                     <label for="password" class="block text-white font-bold mb-2 text-lg pl-1">Mot de passe</label>
                     <input id="password" type="password" name="password" required autocomplete="current-password" 
                            placeholder="Ton mot de passe" 
-                           class="w-full rounded-xl border-none bg-white py-3.5 px-4 text-gris placeholder-gray-400 focus:ring-4 focus:ring-renews-vert/50 transition-shadow">
+                           class="w-full rounded-xl border-none bg-white py-3.5 px-4 text-gray-800 placeholder-gray-400 focus:ring-4 focus:ring-renews-vert/50 transition-shadow">
                     <x-input-error :messages="$errors->get('password')" class="mt-2 text-red-400 font-bold text-sm" />
                 </div>
 
