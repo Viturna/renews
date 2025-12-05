@@ -53,10 +53,14 @@
                     Contenus & Quiz
                 </a>
 
-                <!-- LIEN UTILISATEURS -->
                 <a href="{{ route('admin.users.index') }}" class="flex items-center px-4 py-3 rounded-lg transition-colors {{ request()->routeIs('admin.users.*') ? 'bg-gray-100 text-black font-semibold' : 'text-gray-600 hover:bg-gray-100 hover:text-black' }}">
                     <i class="fa-solid fa-users w-6 text-center mr-2"></i>
                     Utilisateurs
+                </a>
+
+                <a href="{{ route('admin.ads.index') }}" class="flex items-center px-4 py-3 rounded-lg transition-colors {{ request()->routeIs('admin.dashboard') ? 'bg-renews-vert text-black font-bold shadow-md' : 'text-gray-600 hover:bg-gray-100 hover:text-black' }}">
+                    <i class="fa-solid fa-chart-line w-6 text-center mr-2"></i>
+                    Ads
                 </a>
             </nav>
 

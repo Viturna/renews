@@ -134,8 +134,7 @@ class AdminController extends Controller
             'theme_id' => 'required|exists:themes,id',
             'title' => 'required|string|max:255',
             'video_url' => 'required|url',
-            // On ignore l'ID du contenu actuel pour la vérification d'unicité de la date
-            'publish_date' => 'required|date|unique:daily_contents,publish_date,' . $dailyContent->id,
+            'publish_date' => 'required|date',
             'description' => 'nullable|string',
         ]);
 
