@@ -22,7 +22,7 @@ class HomeController extends Controller
             $seenContentIds = DB::table('user_progress')->where('user_id', $userId)->pluck('daily_content_id');
 
             $articles = DailyContent::with('theme')
-                ->whereDate('publish_date', '<=', Carbon::today())
+                ->whereDate('publish_date', Carbon::today())
                 // ->whereNotIn('id', $seenContentIds)
                 ->orderBy('publish_date', 'desc')
                 ->take(10)

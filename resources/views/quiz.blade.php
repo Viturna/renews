@@ -12,7 +12,7 @@
              class="absolute inset-0 z-50 flex flex-col items-center justify-center bg-renews-noir-impure h-full w-full">
             
             <div class="relative text-center transform scale-110">
-                <div class="absolute -top-10 -right-6 text-renews-electric text-6xl animate-pulse" style="transform: rotate(15deg);">
+                <div class="absolute -top-10 -right-6 text-renews-vert text-6xl animate-pulse" style="transform: rotate(15deg);">
                     <i class="fa-solid fa-bolt"></i>
                 </div>
                 
@@ -20,13 +20,13 @@
                     Quiz
                 </h1>
                 
-                <h1 class="text-8xl font-accent italic font-medium tracking-tighter leading-none text-renews-electric -mt-4 relative z-10">
+                <h1 class="text-8xl font-accent italic font-medium tracking-tighter leading-none text-renews-vert -mt-4 relative z-10">
                     Time
                 </h1>
                 
-                <div class="w-[110%] h-1.5 bg-white mt-2 -ml-[5%] rounded-full shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
+                <div class="w-[110%] h-1.5 bg-white mt-2 -ml-[5%] rounded-full"></div>
                 
-                <div class="absolute -bottom-10 -right-10 text-renews-electric text-6xl animate-spin-slow">
+                <div class="absolute -bottom-10 -right-10 text-renews-vert text-6xl animate-spin-slow">
                     <i class="fa-solid fa-star-of-life"></i>
                 </div>
             </div>
@@ -43,13 +43,10 @@
                 <div class="leading-tight">
                     <span class="block text-4xl font-bold text-white tracking-tight">Quiz de</span>
                     <span class="block text-4xl font-bold tracking-tight">
-                        la <span class="text-renews-electric font-accent italic border-b-2 border-white pb-1">veille</span>
-                        <i class="fa-solid fa-star text-renews-electric text-sm align-top ml-1"></i>
+                        la <span class="text-renews-vert font-accent italic border-b-2 border-white pb-1">veille</span>
+                        <i class="fa-solid fa-star text-renews-vert text-sm align-top ml-1"></i>
                     </span>
                 </div>
-                <span class="px-2 py-1 bg-white text-renews-vert rounded-full font-semibold font-accent italic text-lg shadow-md border border-renews-electric">
-                    {{ $content->theme->name }}
-                </span>
             </div>
 
             <div class="mb-8 flex flex-col">
@@ -76,7 +73,7 @@
                 <template x-for="answer in currentQuestion.answers" :key="answer.id">
                     <button @click="selectAnswer(answer.id)"
                             :class="selectedAnswer === answer.id 
-                                ? 'bg-renews-electric ring-4 ring-renews-electric scale-[1.02]' 
+                                ? 'bg-renews-vert ring-4 ring-renews-vert scale-[1.02]' 
                                 : 'bg-white hover:bg-gray-100'"
                             class="w-full py-3 px-6 rounded-xl font-medium text-black text-lg shadow-lg transition-all duration-200 text-center relative">
                         <span x-text="answer.answer_text"></span>
@@ -88,7 +85,7 @@
                 <button @click="validateAnswer()"
                         :disabled="!selectedAnswer"
                         :class="!selectedAnswer ? 'opacity-50 cursor-not-allowed grayscale' : 'hover:scale-[1.02] active:scale-95'"
-                        class="w-full py-4 bg-renews-vert text-white font-black text-2xl rounded-xl shadow-[0_4px_20px_rgba(112,205,37,0.4)] transition-all uppercase tracking-wide">
+                        class="w-full py-4 bg-renews-vert text-white font-black text-2xl rounded-xl transition-all uppercase tracking-wide">
                     Je valide
                 </button>
             </div>
@@ -103,13 +100,13 @@
             
             <div class="text-center mb-8 relative">
                 <h1 class="text-4xl font-bold text-white tracking-tight">
-                    Tes <span class="relative inline-block text-renews-electric font-accent italic">
+                    Tes <span class="relative inline-block text-renews-vert font-accent italic">
                         résultats
                         <span class="absolute bottom-1 left-0 w-full h-0.5 bg-white"></span>
                         <span class="absolute -top-1 -right-3 text-xl">✦</span>
                     </span>
                 </h1>
-                <div class="mt-4 inline-block px-4 py-1 bg-white text-renews-fonce rounded-full font-bold font-accent italic text-lg shadow-md border border-renews-electric">
+                <div class="mt-4 inline-block px-4 py-1 bg-white text-renews-fonce rounded-full font-bold font-accent italic text-lg border border-renews-vert">
                     {{ $content->theme->name }}
                 </div>
             </div>
@@ -119,12 +116,12 @@
                 
                 <div class="text-center z-10 flex flex-col items-center leading-none">
                     <span class="text-[10rem] font-black italic text-white drop-shadow-xl" 
-                          style="font-family: 'Instrument Sans', sans-serif; -webkit-text-stroke: 3px white; color: transparent; text-shadow: 4px 4px 0px #74FD08;"
+                          style="font-family: 'Instrument Sans', sans-serif; -webkit-text-stroke: 3px white; color: transparent;"
                           x-text="score">0</span>
                     <span class="text-3xl font-medium text-white mt-[-20px]">sur <span x-text="totalQuestions">5</span></span>
                 </div>
 
-                <div class="absolute bottom-4 right-0 w-24 h-24 bg-renews-electric flex items-center justify-center rotate-12 shadow-lg animate-bounce-slow" 
+                <div class="absolute bottom-4 right-0 w-24 h-24 bg-renews-vert flex items-center justify-center rotate-12 shadow-lg animate-bounce-slow" 
                      style="clip-path: polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%);">
                     <div class="text-center leading-tight">
                         <span class="block text-2xl font-black text-white drop-shadow-md" x-text="'+' + (score * 10)">+0</span>
@@ -147,7 +144,7 @@
 
             <div class="w-full max-w-md">
                 <button @click="$refs.quizForm.submit()"
-                        class="w-full py-4 bg-renews-vert text-black font-black text-2xl rounded-xl shadow-[0_0_20px_#74FD08] hover:scale-105 transition-transform uppercase">
+                        class="w-full py-4 bg-renews-vert text-white font-black text-2xl rounded-xl hover:scale-105 transition-transform uppercase">
                     Réclamer mes XP <i class="fa-solid fa-arrow-right ml-2"></i>
                 </button>
             </div>

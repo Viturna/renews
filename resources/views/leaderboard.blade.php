@@ -58,7 +58,7 @@
                             <div class="text-sm text-white/80 font-bold mb-2">{{ $player1['points'] }} pts</div>
                             
                             {{-- Bloc Podium 1 --}}
-                            <div class="w-full bg-renews-vert py-2 text-3xl font-black h-36 flex items-start justify-center pt-4 text-white">
+                            <div class="w-full bg-renews-vert text-3xl font-black h-36 flex items-start justify-center pt-4 text-white">
                                 #1
                             </div>
                         </div>

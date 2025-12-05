@@ -6,16 +6,12 @@
         $adIndex = 0;
         $articleCount = 0;
         
-        // On crée une liste unique d'articles et de publicités
         foreach ($articles as $article) {
-            // Ajouter l'article
             $interleavedContent[] = ['type' => 'article', 'data' => $article];
             $articleCount++;
 
-            // Si des publicités sont disponibles et que nous avons atteint l'intervalle de la pub
             if ($ads->isNotEmpty() && $adIndex < $ads->count()) {
                 $ad = $ads[$adIndex];
-                // Utiliser display_interval défini dans la base, par défaut 5 articles
                 $interval = $ad->display_interval ?? 5; 
 
                 if ($articleCount % $interval === 0) {
@@ -25,24 +21,25 @@
             }
         }
     @endphp
-    <div class="relative w-full h-[calc(100vh-85px)] bg-renews-noir-impure overflow-hidden flex flex-col items-center pb-6 font-sans">
+
+    <div class="relative w-full bg-renews-noir-impure overflow-hidden flex flex-col items-center pb-2 font-sans">
 
         <div class="absolute inset-0 z-0 pointer-events-none" 
              style="background-image: url('/images/bg-stars.png'); background-size: cover; background-position: center;">
         </div>
 
-        <div class="z-10 mt-6 mb-4 text-center">
-            <h1 class="text-4xl font-bold text-white tracking-tight">
+        <div class="z-10 mt-4 mb-2 text-center">
+            <h1 class="text-3xl font-bold text-white tracking-tight">
                 Actus du 
-                <span class="relative inline-block text-renews-vert text-5xl font-accent italic pr-2">
+                <span class="relative inline-block text-renews-vert text-4xl font-accent italic pr-2">
                     jour
-                    <span class="absolute bottom-1 left-0 w-full h-0.5 bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]"></span>
+                    <span class="absolute bottom-1 left-0 w-full h-0.5 bg-white "></span>
                     <span class="absolute -top-1 -right-0 text-xl">✦</span>
                 </span>
             </h1>
         </div>
 
-        <div id="card-stack" class="relative w-full max-w-[340px] aspect-[340/400] z-10 mx-auto flex-1 mb-4">
+        <div id="card-stack" class="relative w-full max-w-[340px] aspect-[340/480] z-10 mx-auto flex-1 mb-2">
             
             <div class="absolute inset-0 flex items-center justify-center text-center p-6 text-white z-0">
                 <div>
@@ -67,7 +64,7 @@
                              <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent"></div>
                         </div>
 
-                        <div class="absolute bottom-0 left-0 w-full p-6 pb-8 text-left pointer-events-none">
+                        <div class="absolute bottom-0 left-0 w-full p-6 pb-10 text-left pointer-events-none">
                             <span class="inline-block text-renews-vert font-accent italic text-3xl mb-1 drop-shadow-md">
                                 {{ $article->theme->name ?? 'Actu' }}
                             </span>
@@ -77,7 +74,7 @@
                             </h2>
                         </div>
                     </div>
-                @else {{-- type === 'ad' --}}
+                @else
                     @php $ad = $item['data']; @endphp
                     <div class="card ad-card absolute inset-0 rounded-[35px] shadow-2xl overflow-hidden transform transition-transform duration-300 origin-bottom select-none"
                          style="z-index: {{ 100 - $index }}; --rotate: 0deg;"
@@ -87,7 +84,7 @@
                         <div class="w-full h-full relative">
                             
                             <div class="absolute inset-0 bg-gray-900">
-                                <img src="{{ $ad->image_url ?? 'https://via.placeholder.com/340x400/1C1C1C/70CD25?text=PUB' }}" 
+                                <img src="{{ $ad->image_url ?? 'https://via.placeholder.com/340x520/1C1C1C/70CD25?text=PUB' }}" 
                                      alt="{{ $ad->title ?? 'Publicité' }}" 
                                      class="w-full h-full object-cover pointer-events-none">
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
@@ -99,7 +96,7 @@
                                 </span>
                             </div>
 
-                            <div class="absolute bottom-0 left-0 w-full p-6 pb-8 text-left z-10">
+                            <div class="absolute bottom-0 left-0 w-full p-6 pb-10 text-left z-10">
                                 <span class="inline-block text-renews-vert text-xl font-bold font-accent mb-2 drop-shadow-md">
                                     Sponsorisé
                                 </span>
@@ -125,7 +122,7 @@
             @endforeach
         </div>
 
-       <div class="w-full max-w-xs px-12 pb-2 z-20 flex items-center justify-between mb-2">
+       <div class="w-full max-w-xs px-12 pb-2 z-20 flex items-center justify-between">
             <button id="btn-reject" class="group flex items-center justify-center w-16 h-16 bg-white rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.3)] hover:scale-110 active:scale-95 transition-all duration-200">
                 <svg class="w-8 h-8 text-[#F14D3F]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -163,7 +160,6 @@
                         card.style.transform = 'scale(1) translate(0px, 0px) rotate(0deg)';
                         card.style.zIndex = 100;
                         card.style.opacity = '1';
-                        // Attacher les événements seulement si ce n'est pas une carte pub
                         if (card.dataset.type === 'article') {
                             attachDragEvents(card);
                         } else {
@@ -181,7 +177,6 @@
                 if(shadow) shadow.style.display = (currentIndex >= cards.length || cards[currentIndex]?.dataset.type !== 'article') ? 'none' : 'block';
             }
 
-            // Événements pour les cartes ARTICLES (swipables)
             function attachDragEvents(card) {
                 card.removeEventListener('touchstart', startDrag);
                 card.removeEventListener('touchmove', drag);
@@ -196,9 +191,7 @@
                 window.addEventListener('mouseup', endDrag);
             }
             
-            // Événements pour les cartes PUB (non swipables, cliquables pour le lien/skip)
             function attachAdEvents(card) {
-                // S'assurer qu'aucun événement de drag n'est actif
                 card.removeEventListener('touchstart', startDrag);
                 card.removeEventListener('touchmove', drag);
                 card.removeEventListener('touchend', endDrag);
@@ -208,17 +201,13 @@
             }
 
             function handleAdClick(e) {
-                // Clic sur une carte Pub
                 const card = cards[currentIndex];
                 const link = card.dataset.link;
 
-                // Si le clic vient de l'intérieur de la carte (non article)
-                // Ouvrir le lien de la publicité dans un nouvel onglet
                 if (link) {
                     window.open(link, '_blank');
                 }
                 
-                // Passer à la carte suivante après le clic sur la pub
                 skipCard();
             }
 
@@ -260,10 +249,8 @@
                 const contentId = card.dataset.id;
                 const endX = window.innerWidth * direction * 1.5;
                 
-                // Animation de sortie
                 card.style.transform = `translateX(${endX}px) rotate(${direction * 30}deg)`;
                 
-                // 1. ENREGISTRER L'INTERACTION (VU)
                 fetch('/content/' + contentId + '/seen', {
                     method: 'POST',
                     headers: {
@@ -271,14 +258,11 @@
                     }
                 });
 
-                // 2. ACTION SUIVANTE
                 if(direction === 1) { 
-                    // Swipe Droite (Like/Oeil) -> Redirection vers vidéo
                     setTimeout(() => {
                         window.location.href = '/content/' + contentId;
                     }, 200);
                 } else {
-                    // Swipe Gauche (Passer) -> Carte suivante
                     setTimeout(() => {
                         currentIndex++;
                         initCards();
@@ -295,7 +279,6 @@
                 return e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
             }
 
-            // Adaptation des boutons pour gérer les cartes Pub
             btnReject.addEventListener('click', () => {
                 if(cards[currentIndex] && cards[currentIndex].dataset.type === 'ad') {
                     skipCard();
@@ -306,7 +289,6 @@
             
             btnAccept.addEventListener('click', () => {
                 if(cards[currentIndex] && cards[currentIndex].dataset.type === 'ad') {
-                    // Les boutons Accept/Reject skippent la pub pour ne pas bloquer l'utilisateur
                     skipCard(); 
                 } else {
                     swipeManual(1);
