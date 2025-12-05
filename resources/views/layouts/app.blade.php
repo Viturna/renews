@@ -44,7 +44,7 @@
                          <a href="{{ route('leaderboard') }}" class="flex flex-col items-center gap-1 transition-colors group
                            {{ request()->routeIs('leaderboard') ? 'text-renews-vert' : 'text-white hover:text-renews-vert' }}">
                             <i class="fa-solid fa-trophy text-xl transition-colors"></i>
-                            <span class="text-[10px] font-medium">Leaderboard</span>
+                            <span class="text-[10px] font-medium">Classement</span>
                         </a>
                         
                         <a href="{{ route('quiz') }}" class="flex flex-col items-center gap-1 transition-colors group

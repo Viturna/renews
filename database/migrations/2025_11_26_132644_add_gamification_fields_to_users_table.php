@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
@@ -18,13 +15,12 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+   public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            //
+            // Important : supprimer la clé étrangère AVANT les colonnes
+            $table->dropForeign(['current_level_id']);
+            $table->dropColumn(['current_level_id', 'current_xp', 'currency_balance']);
         });
     }
 };

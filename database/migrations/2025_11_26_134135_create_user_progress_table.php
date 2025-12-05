@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('user_progress', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('daily_content_id')->constrained();
+            $table->foreignId('daily_content_id')->constrained()->onDelete('cascade');
             
             $table->boolean('video_watched')->default(false);
             $table->timestamp('watched_at')->nullable();

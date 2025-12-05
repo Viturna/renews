@@ -125,7 +125,7 @@
             @endforeach
         </div>
 
-       <div class="w-full max-w-xs px-4 pb-2 z-20 flex items-center justify-between mb-2">
+       <div class="w-full max-w-xs px-12 pb-2 z-20 flex items-center justify-between mb-2">
             <button id="btn-reject" class="group flex items-center justify-center w-16 h-16 bg-white rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.3)] hover:scale-110 active:scale-95 transition-all duration-200">
                 <svg class="w-8 h-8 text-[#F14D3F]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />

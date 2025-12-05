@@ -73,6 +73,9 @@ Route::middleware('auth')->group(function () {
         
         Route::get('/contents', [AdminController::class, 'contents'])->name('admin.contents.index');
         Route::post('/contents', [AdminController::class, 'storeContent'])->name('admin.contents.store');
+
+        Route::patch('/contents/{dailyContent}', [AdminController::class, 'updateContent'])->name('admin.contents.update');
+        Route::delete('/contents/{dailyContent}', [AdminController::class, 'destroyContent'])->name('admin.contents.destroy');
         
         Route::get('/content/{dailyContent}/quiz', [AdminController::class, 'manageQuiz'])->name('admin.quiz.manage');
         Route::post('/content/{dailyContent}/quiz', [AdminController::class, 'updateQuiz'])->name('admin.quiz.update');

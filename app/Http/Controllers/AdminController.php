@@ -26,7 +26,6 @@ class AdminController extends Controller
         return view('admin.dashboard', compact('stats', 'lastUsers'));
     }
 
-    // --- GESTION UTILISATEURS ---
     public function users(Request $request)
     {
         $query = User::query();
@@ -127,6 +126,39 @@ class AdminController extends Controller
         }
 
         return back()->with('success', 'Contenu planifié !');
+    }
+
+    public function updateContent(Request $request, DailyContent $dailyContent)
+    {
+        $request->validate([
+            'theme_id' => 'required|exists:themes,id',
+            'title' => 'required|string|max:255',
+            'video_url' => 'required|url',
+            // On ignore l'ID du contenu actuel pour la vérification d'unicité de la date
+            'publish_date' => 'required|date|unique:daily_contents,publish_date,' . $dailyContent->id,
+            'description' => 'nullable|string',
+        ]);
+
+        $publishDate = \Carbon\Carbon::parse($request->publish_date);
+        // Recalcul de la date de déblocage du quiz
+        $unlockDate = $publishDate->copy()->addDay()->setTime(8, 0, 0);
+
+        $dailyContent->update([
+            'theme_id' => $request->theme_id,
+            'title' => $request->title,
+            'video_url' => $request->video_url,
+            'description' => $request->description,
+            'publish_date' => $request->publish_date,
+            'unlock_quiz_at' => $unlockDate,
+        ]);
+
+        return back()->with('success', 'Contenu mis à jour !');
+    }
+
+    public function destroyContent(DailyContent $dailyContent)
+    {
+        $dailyContent->delete();
+        return back()->with('success', 'Contenu supprimé.');
     }
 
     public function manageQuiz(DailyContent $dailyContent)

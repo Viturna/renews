@@ -28,10 +28,11 @@ class HomeController extends Controller
                 ->take(10)
                 ->get()
                 ->map(function ($article) {
-                    if (preg_match('/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/', $article->video_url, $matches)) {
+                    // MODIFICATION ICI : Ajout de "|shorts" dans le regex
+                    if (preg_match('/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/', $article->video_url, $matches)) {
                         $article->thumbnail = "https://img.youtube.com/vi/" . $matches[1] . "/maxresdefault.jpg";
                     } else {
-                        $article->thumbnail = "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158"; // Vignette par défaut
+                        $article->thumbnail = "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158"; 
                     }
                     return $article;
                 });
@@ -111,7 +112,7 @@ class HomeController extends Controller
         $dailyContent->load(['comments.user', 'comments.replies.user']);
 
         $embedUrl = $dailyContent->video_url;
-        if (preg_match('/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/', $dailyContent->video_url, $matches)) {
+        if (preg_match('/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/', $dailyContent->video_url, $matches)) {
             $embedUrl = "https://www.youtube.com/embed/" . $matches[1] . "?autoplay=1&rel=0";
         }
 
